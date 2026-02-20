@@ -16,12 +16,25 @@ const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
 const viewRouter = require("./routes/viewRoutes");
+const cors = require('cors');
 
 const app = express();
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 //1) GLOBAL MIDDLEWARES
+
+//Implement CORS
+app.use(cors());
+//Access-Control-Allow-Origin *
+//api.natours.com, front-end natours.com
+// app.use(cors({
+//     origin: 'https://www.natours.com'
+// }));
+
+app.options('*', cors()); //to allow preflight phase for all routes, for complex requests like patch, delete, put etc. which are not simple requests and require preflight phase. This will allow all the options request to be handled by cors middleware.
+//app.options('/api/v1/tours/:id', cors()); //to allow preflight phase for specific route. This will allow options request for this specific route to be handled by cors middleware. This is for complex requests like patch, delete, put etc. which are not simple requests and require preflight phase.
+
 //serving static file
 app.use(express.static(path.join(__dirname, 'public')));
 
