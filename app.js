@@ -65,7 +65,8 @@ app.use(
                 'https://cartodb-basemaps-a.global.ssl.fastly.net',
                 'https://cartodb-basemaps-b.global.ssl.fastly.net',
                 'https://cartodb-basemaps-c.global.ssl.fastly.net',
-                'https://cartodb-basemaps-d.global.ssl.fastly.net'
+                'https://cartodb-basemaps-d.global.ssl.fastly.net',
+                'https://natours-tvii.onrender.com'
             ],
             frameSrc: ["'self'", 'https://js.stripe.com']
         }
