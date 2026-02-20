@@ -8,6 +8,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController')
@@ -15,8 +16,8 @@ const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
+const bookingConroller = require("./controllers/bookingController");
 const viewRouter = require("./routes/viewRoutes");
-const cors = require('cors');
 
 const app = express();
 app.set('view engine', 'pug');
@@ -85,6 +86,8 @@ const limiter = rateLimit({
     message: 'Too many requests from this IP, please try again in an hour!'
 });
 app.use('/api', limiter); //to apply this limiter only on routes which start with /api
+
+app.post('/webhook-checkout',express.raw({type: 'application/json'}), bookingConroller.webhookCheckout); 
 
 //body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //body size is limited to 10kb
