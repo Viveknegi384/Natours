@@ -5,6 +5,7 @@ import { login } from './login.js';
 import { logout } from './login.js';
 import { updateSettings } from './updateSettings.js';
 import { bookTour } from './stripe.js';
+import { showAlert } from './alerts.js';
 
 // DOM Elements
 const mapBox = document.getElementById('map');
@@ -31,7 +32,7 @@ if (loginForm)
 if (logoutBtn)
     logoutBtn.addEventListener('click', logout);
 
-if(userDataForm)
+if (userDataForm)
     userDataForm.addEventListener('submit', e => {
         e.preventDefault();
         const form = new FormData();
@@ -40,7 +41,7 @@ if(userDataForm)
         form.append('photo', document.getElementById('photo').files[0]);
         updateSettings(form, 'data');
     });
-if(userPasswordForm)
+if (userPasswordForm)
     userPasswordForm.addEventListener('submit', async e => {
         e.preventDefault();
         document.querySelector('.btn--save-password').textContent = 'Updating...';
@@ -57,12 +58,12 @@ if(userPasswordForm)
         document.getElementById('password-confirm').value = '';
     });
 
-if(bookBtn)
+if (bookBtn)
     bookBtn.addEventListener('click', e => {
         e.target.textContent = 'Processing...';
         const { tourId } = e.target.dataset;
         bookTour(tourId);
-});
+    });
 
 const alertMessage = document.querySelector('body').dataset.alert;
-if(alertMessage) showAlert('success', alertMessage, 20);
+if (alertMessage) showAlert('success', alertMessage, 20);

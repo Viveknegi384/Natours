@@ -18,6 +18,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         cancel_url: `${req.protocol}://${req.get("host")}/tour/${tour.slug}`,
         customer_email: req.user.email,
         client_reference_id: req.params.tourId,
+        metadata: {
+            tourPrice: tour.price
+        },
         line_items: [
             {
                 price_data: {
@@ -55,29 +58,38 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 // });
 
 const createBookingCheckout = async session => {
-    const tour = session.client_reference_id;
-    const user = (await User.findOne({email: session.customer_email})).id;
-    const price = session.line_items[0].price_data.unit_amount / 100;
+    try {
+        const tour = session.client_reference_id;
+        const user = (await User.findOne({ email: session.customer_email })).id;
+        const price = Number(session.metadata.tourPrice);
 
-    await Booking.create({ tour,user, price });
-
+        await Booking.create({ tour, user, price });
+        // eslint-disable-next-line no-console
+        console.log('✅ Booking created successfully!');
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('❌ Error creating booking:', err);
+    }
 }
 
-exports.webhookCheckout = (req, res, next) => {
+exports.webhookCheckout = async (req, res, next) => {
     const signature = req.headers['stripe-signature'];
 
     let event;
-    try{
+    try {
         event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET);
     }
     catch (err) {
         return res.status(400).send(`Webhook error: ${err.message}`);
     }
 
-    if(event.type === 'checkout.session.completed') 
-        createBookingCheckout(event.data.object);
+    // eslint-disable-next-line no-console
+    console.log('✅ Webhook received:', event.type);
 
-    res.status(200).json({received: true});
+    if (event.type === 'checkout.session.completed')
+        await createBookingCheckout(event.data.object);
+
+    res.status(200).json({ received: true });
 
 };
 
